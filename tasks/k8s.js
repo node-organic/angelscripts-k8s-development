@@ -1,9 +1,15 @@
 const findSkeletonRoot = require('organic-stem-skeleton-find-root')
 const getPodsForCell = require('organic-stem-k8s-get-pods')
 const path = require('path')
+const {exec} = require('child_process')
 const YAML = require('json-to-pretty-yaml')
 const getCurrentBranchName = function () {
-  return 'test'
+  return new Promise((resolve, reject) => {
+    exec("git branch | grep \\* | cut -d ' ' -f2", (err, stdout) => {
+      if (err) return reject(err)
+      resolve(stdout)
+    })
+  })
 }
 const dnaToYAML = function (dnaBranch) {
   let yamlContents = ''
@@ -14,13 +20,28 @@ const dnaToYAML = function (dnaBranch) {
   }
   return yamlContents
 }
+const ensureNamespaceExists = function (namespace) {
+  return new Promise((resolve, reject) => {
+    exec(`kubectl get namespace ${namespace}`, (err, stdout) => {
+      if (err) return reject(err)
+      console.log(namespace)
+      if (!namespace) {
+        exec(`kubectl create namepsace ${namespace}`, (err, stdout) => {
+          if (err) return reject(err)
+          resolve()
+        })
+      }
+      resolve()
+    })
+  })
+}
 
 module.exports = async function (angel) {
   angel.on(/k8s (.*)/, async function (angel) {
     process.env.CELLDEVCMD = angel.cmdData[1]
     let username = process.env.USER
     let REPO = await findSkeletonRoot()
-    let branchName = await getCurrentBranchName() // TODO implement
+    let branchName = await getCurrentBranchName()
     process.env.REPOBRANCH = branchName
     let packagejson = require(path.join(process.cwd(), 'package.json'))
     process.env.CELLVERSION = packagejson.version
@@ -50,14 +71,13 @@ module.exports = async function (angel) {
     // using namespaced deployments based on USERNAME
     console.log('DEPLOYING:')
     let development = cellInfo.dna.development
-    // @TODO: `kubectl create namespace ${username}` if not exists
+    await ensureNamespaceExists(username)
     let child = angel.exec(`kubectl apply --namespace ${username} -f -`)
     let yamlContents = dnaToYAML(development)
-    console.log(yamlContents)
     child.stdin.write(yamlContents)
     child.stdin.end()
 
-    // quick hack, should be `await child.terminated()`
+    // quick workaround, should be `await child.terminated()`
     await (new Promise((resolve, reject) => child.on('exit', resolve)))
 
     if (!cellInfo.dna.disableSync) {
@@ -78,10 +98,10 @@ module.exports = async function (angel) {
       angel.exec(proxyCmd)
     }
 
-    /* process.on('SIGINT', () => {
+    process.on('SIGINT', () => {
       let child = angel.exec(`kubectl delete --namespace ${username} -f -`)
       child.stdin.write(yamlContents)
       child.stdin.end()
-    }) */
+    })
   })
 }

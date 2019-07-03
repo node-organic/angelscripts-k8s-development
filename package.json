@@ -12,11 +12,12 @@
     "angelscripts-dockerbuild": "^1.0.0"
   },
   "dependencies": {
-    "organic-stem-k8s-get-pods": "github:node-organic/organic-stem-k8s-get-pods#v1.0.1",
     "angelabilities-exec": "^1.0.0",
+    "angelscripts-dockerbuild": "^1.0.0",
     "json-to-pretty-yaml": "^1.2.2",
     "json2yaml": "^1.1.0",
     "organic-dna-cells-info": "^2.0.1",
+    "organic-stem-k8s-get-pods": "github:node-organic/organic-stem-k8s-get-pods#v1.0.1",
     "organic-stem-skeleton-find-root": "^1.0.1"
   },
   "devDependencies": {
@@ -27,8 +28,16 @@
     "eslint-plugin-promise": "^3.7.0",
     "eslint-plugin-standard": "^3.0.1"
   },
-  "description": "",
+  "description": "organic-angel scripts for development within k8s clusters",
   "main": "index.js",
   "author": "Boris Filipov",
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/node-organic/angelscripts-k8s-development.git"
+  },
+  "bugs": {
+    "url": "https://github.com/node-organic/angelscripts-k8s-development/issues"
+  },
+  "homepage": "https://github.com/node-organic/angelscripts-k8s-development#readme"
 }

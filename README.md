@@ -4,6 +4,21 @@
 
 :warning: Experimental
 
-## commands
+## setup
 
-### `angel k8s :cmd`
+```
+$ npm i angelscripts-k8s-development --save
+$ cd dna/cells/my-cell
+$ touch development.yaml
+```
+
+### how it works
+
+* reads `development.yaml` found under the current working stem cell, passing values for:
+  * `CELLDEVCMD` - what dev command should be used to start the container
+  * `REPOBRANCH` - name of the repo branch currently working at
+  * `CELLVERSION` - cell's version from `package.json`
+
+### usage
+
+#### `angel k8s :devCmd`
