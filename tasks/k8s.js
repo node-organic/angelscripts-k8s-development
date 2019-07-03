@@ -7,7 +7,7 @@ const getCurrentBranchName = function () {
   return new Promise((resolve, reject) => {
     exec("git branch | grep \\* | cut -d ' ' -f2", (err, stdout) => {
       if (err) return reject(err)
-      resolve(stdout)
+      resolve(stdout.trim().replace('\r', ''))
     })
   })
 }
@@ -63,6 +63,7 @@ module.exports = async function (angel) {
         `docker tag ${imageTag} ${registry}/${imageTag}`,
         `docker push ${registry}/${imageTag}`
       ].join(' && ')
+      console.log('running', cmd)
       await angel.exec(cmd)
       console.log(`done, pushed ${registry}/${imageTag}`)
     }
