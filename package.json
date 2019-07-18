@@ -9,7 +9,7 @@
   },
   "peerDependencies": {
     "organic-angel": "0.3.x",
-    "angelscripts-dockerbuild": "^1.0.0"
+    "angelscripts-dockerbuild": "^2.0.0"
   },
   "dependencies": {
     "angelabilities-exec": "^1.0.0",
