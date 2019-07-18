@@ -1,10 +1,10 @@
 const path = require('path')
 
 module.exports = function (angel) {
-  angel.on('k8s enter', function (angel) {
-    angel.do('k8s enter default')
+  angel.on('k8sd enter', function (angel) {
+    angel.do('k8sd enter default')
   })
-  angel.on('k8s enter :namespace', function (angel) {
+  angel.on('k8sd enter :namespace', function (angel) {
     let packagejson = require(path.join(process.cwd(), 'package.json'))
     let cellName = packagejson.name
     let namespace = angel.cmdData.namespace

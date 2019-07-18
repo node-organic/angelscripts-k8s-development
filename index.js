@@ -1,8 +1,8 @@
 module.exports = function (angel) {
   require('angelabilities-exec')(angel)
-  require('./tasks/k8s-up')(angel)
-  require('./tasks/k8s-down')(angel)
-  require('./tasks/k8s-enter')(angel)
-  require('./tasks/k8s-apply')(angel)
-  require('./tasks/k8s-delete')(angel)
+  require('./tasks/k8sd-up')(angel)
+  require('./tasks/k8sd-down')(angel)
+  require('./tasks/k8sd-enter')(angel)
+  require('./tasks/k8sd-apply')(angel)
+  require('./tasks/k8sd-delete')(angel)
 }

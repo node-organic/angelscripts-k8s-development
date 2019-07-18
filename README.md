@@ -2,23 +2,24 @@
 
 [organic-angel](https://github.com/node-organic/organic-angel) scripts for development within k8s clusters.
 
-:warning: Experimental
+Works with [angelscripts-dockerbuild](https://github.com/node-organic/angelscripts-dockerbuild).
+
+## prerequirements
+
+* `kubectl`
+* [devspace](https://github.com/devspace-cloud/devspace)
 
 ## setup
 
 ```
 $ npm i angelscripts-k8s-development --save
-$ cd dna/cells/my-cell
-$ touch development.yaml
+$ edit dna/cells/my-cell/development.yaml
 ```
-
-### how it works
-
-* reads `development.yaml` found under the current working stem cell, passing values for:
-  * `CELLDEVCMD` - what dev command should be used to start the container
-  * `REPOBRANCH` - name of the repo branch currently working at
-  * `CELLVERSION` - cell's version from `package.json`
 
 ### usage
 
-#### `angel k8s :devCmd`
+#### `angel k8sd up :namespace :branchName -- :runCMD`
+#### `angel k8sd down :namespace :branchName`
+#### `angel k8sd enter :namespace`
+#### `angel k8sd apply :namespace :branchName`
+#### `angel k8sd delete :namespace :branchName`

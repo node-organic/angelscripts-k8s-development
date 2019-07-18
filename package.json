@@ -17,7 +17,7 @@
     "json-to-pretty-yaml": "^1.2.2",
     "json2yaml": "^1.1.0",
     "organic-dna-cells-info": "^2.0.1",
-    "organic-stem-k8s-get-pods": "github:node-organic/organic-stem-k8s-get-pods#v1.0.1",
+    "organic-stem-k8s-get-pods": "^1.1.0",
     "organic-stem-skeleton-find-root": "^1.0.1"
   },
   "devDependencies": {

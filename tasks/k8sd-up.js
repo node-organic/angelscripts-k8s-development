@@ -21,15 +21,16 @@ const ensureNamespaceExists = function (namespace) {
 }
 
 module.exports = async function (angel) {
-  angel.on(/^k8s up$/, async function (angel) {
-    angel.do(`k8s up ${process.env.USER} -- echo 'noop'`)
+  angel.on(/^k8sd up$/, async function (angel) {
+    angel.do(`k8sd up ${process.env.USER} development -- echo 'noop'`)
   })
-  angel.on(/k8s up -- (.*)/, async function (angel) {
-    angel.do(`k8s up ${process.env.USER} -- ${angel.cmdData[1]}`)
+  angel.on(/k8sd up -- (.*)/, async function (angel) {
+    angel.do(`k8sd up ${process.env.USER} development -- ${angel.cmdData[1]}`)
   })
-  angel.on(/k8s up (.*) -- (.*)/, async function (angel) {
+  angel.on(/k8sd up (.*) (.*) -- (.*)/, async function (angel) {
     const namespace = angel.cmdData[1]
-    const runCMD = angel.cmdData[2]
+    const branchName = angel.cmdData[2]
+    const runCMD = angel.cmdData[3]
 
     const REPO = await findSkeletonRoot()
     const loadCellInfo = require(path.join(REPO, 'cells/node_modules/lib/load-cell-info'))
@@ -46,7 +47,7 @@ module.exports = async function (angel) {
       console.info('ENSURE NAMESPACE:')
       await ensureNamespaceExists(namespace)
 
-      let {yamlContents, imageTag, registry} = await buildContents(namespace, options.disableBuild)
+      let {yamlContents, imageTag, registry} = await buildContents(namespace, branchName)
 
       if (!options.disableBuild) {
         console.info('BUILDING:')
@@ -63,14 +64,12 @@ module.exports = async function (angel) {
         console.log(`done, pushed ${registry}/${imageTag}`)
       }
 
-      // spawn a new deployment a clone to existing
-      // using namespaced deployments based on USERNAME
       console.log('DEPLOYING:')
       let child = angel.exec(`kubectl apply --namespace ${namespace} -f -`)
       child.stdin.write(yamlContents)
       child.stdin.end()
 
-      // quick workaround, should be `await child.terminated()`
+      // wait for deployment to complete
       await (new Promise((resolve, reject) => child.on('exit', resolve)))
     } else {
       console.info(`FOUND EXISTING PODS in ${namespace}`, existingPods.length)
