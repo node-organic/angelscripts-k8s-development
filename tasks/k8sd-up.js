@@ -8,9 +8,11 @@ const buildContents = require('../lib/build-k8s-config-contents')
 const ensureNamespaceExists = function (namespace) {
   return new Promise((resolve, reject) => {
     exec(`kubectl get namespace ${namespace}`, (err, stdout) => {
-      if (err) return reject(err)
+      if (err) {
+        // ignore errors ?
+      }
       if (!namespace) {
-        exec(`kubectl create namepsace ${namespace}`, (err, stdout) => {
+        exec(`kubectl create namespace ${namespace}`, (err, stdout) => {
           if (err) return reject(err)
           resolve()
         })
@@ -31,7 +33,6 @@ module.exports = async function (angel) {
     const namespace = angel.cmdData[1]
     const branchName = angel.cmdData[2]
     const runCMD = angel.cmdData[3]
-
     const REPO = await findSkeletonRoot()
     const loadCellInfo = require(path.join(REPO, 'cells/node_modules/lib/load-cell-info'))
     const packagejson = require(path.join(process.cwd(), 'package.json'))
