@@ -23,3 +23,4 @@ $ edit dna/cells/my-cell/development.yaml
 #### `angel k8sd enter :namespace`
 #### `angel k8sd apply :namespace :branchName`
 #### `angel k8sd delete :namespace :branchName`
+#### `angel k8sd exec :namespace -- :runCMD`

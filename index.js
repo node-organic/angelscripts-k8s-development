@@ -5,4 +5,5 @@ module.exports = function (angel) {
   require('./tasks/k8sd-enter')(angel)
   require('./tasks/k8sd-apply')(angel)
   require('./tasks/k8sd-delete')(angel)
+  require('./tasks/k8sd-exec')(angel)
 }
