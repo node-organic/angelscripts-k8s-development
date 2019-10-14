@@ -6,4 +6,6 @@ module.exports = function (angel) {
   require('./tasks/k8sd-apply')(angel)
   require('./tasks/k8sd-delete')(angel)
   require('./tasks/k8sd-exec')(angel)
+  require('./tasks/k8sd-sync')(angel)
+  require('./tasks/k8sd-logs')(angel)
 }

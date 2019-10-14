@@ -72,19 +72,22 @@ module.exports = async function (angel) {
 
       // wait for deployment to complete
       await (new Promise((resolve, reject) => child.on('exit', resolve)))
+      existingPods = await getPodsForCell({cellName, namespace: namespace, waitPods: true})
     } else {
       console.info(`FOUND EXISTING PODS in ${namespace}`, existingPods.length)
     }
 
     if (!options.disableSync) {
       console.log('WATCHING:')
-      let startSyncCmd = `devspace sync --exclude=node_modules --namespace ${namespace} --label-selector app=${cellName} --container-path /${cellInfo.dna.cwd}`
+      let startSyncCmd = `angel k8sd sync ${namespace} ${existingPods[0]}`
       console.info('run sync:', startSyncCmd)
-      angel.exec(startSyncCmd)
+      let child = exec(startSyncCmd)
+      child.stdout.pipe(process.stdout)
+      child.stderr.pipe(process.stderr)
     }
 
     if (!options.disableLogs) {
-      let tailLogsCmd = `devspace logs -f --namespace ${namespace} --label-selector app=${cellName} -c ${cellName}`
+      let tailLogsCmd = `angel k8sd logs ${namespace} ${existingPods[0]}`
       console.info('run logs:', tailLogsCmd)
       angel.exec(tailLogsCmd)
     }
