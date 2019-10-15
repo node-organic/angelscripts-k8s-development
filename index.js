@@ -8,4 +8,5 @@ module.exports = function (angel) {
   require('./tasks/k8sd-exec')(angel)
   require('./tasks/k8sd-sync')(angel)
   require('./tasks/k8sd-logs')(angel)
+  require('./tasks/k8sd-reload')(angel)
 }
