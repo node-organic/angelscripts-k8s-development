@@ -11,7 +11,7 @@ const ensureNamespaceExists = function (namespace) {
       if (err) {
         // ignore errors ?
       }
-      if (!namespace) {
+      if (stdout.toString().indexOf(namespace) === -1) {
         exec(`kubectl create namespace ${namespace}`, (err, stdout) => {
           if (err) return reject(err)
           resolve()
@@ -52,7 +52,7 @@ module.exports = async function (angel) {
 
       if (!options.disableBuild) {
         console.info('BUILDING:')
-        let buildCmd = `npx angel build development ${imageTag} -- ${runCMD}`
+        let buildCmd = `npx angel build ${imageTag}-base development ${imageTag} -- ${runCMD}`
         console.log(buildCmd)
         await angel.exec(buildCmd)
         console.log('PUBLISHING:')

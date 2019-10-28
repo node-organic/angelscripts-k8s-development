@@ -7,6 +7,7 @@ Works with [angelscripts-dockerbuild](https://github.com/node-organic/angelscrip
 ## prerequirements
 
 * `kubectl`
+* `angelscripts-dockerbuild`
 
 ## setup
 
@@ -21,19 +22,26 @@ Notes:
 
 * `namespace` value if not provided will be sourced from `process.env.USER` variable.
 
-#### `angel k8sd up :namespace :branchName -- :runCMD`
-
-Creates (or re-uses) a k8s deployment within `namespace` using `branchName` to drain k8s configuration from the current working cell dna.
-
-example:
+#### example
 
 ```
 $ cd ./my-stem-skeleton-2-1-based-project
 $ cd ./cells/myCell
-$ angel k8sd up myNamespace development -- nodemon index.js
+$ angel k8sd buildbase
+$ angel k8sd up -- nodemon index.js
+$ angel k8sd down
 ```
 
-The above example will load the project's dna and will use `cells.myCell.development` as k8s configuration to bootstrap (or seek existing) deployment with entry point `nodemon index.js`
+The above example will start `myCell` for development by building its base image of dependencies and its staged in git source code.
+
+It will use `cells.myCell.development` as k8s configuration to bootstrap (or seek existing) deployment. 
+
+The container will be started with command `nodemon index.js` within namespace with value of `process.env.USER`.
+
+
+#### `angel k8sd up :namespace :branchName -- :runCMD`
+
+Creates (or re-uses) a k8s deployment within `namespace` using `branchName` to drain k8s configuration from the current working cell dna.
 
 Stopping the command doesn't stops the container.
 The command starts (and stops when stopped) local synchronizer and logs streaming.
@@ -46,9 +54,11 @@ Stops already running container via `angel k8sd up`
 
 Enters as remote bash session within already running container via `angel k8sd up`.
 
-#### `angel k8sd apply :namespace :branchName`
+#### `angel k8sd start :namespace :branchName`
 
-Applies given `cells.<cell>.<branchName>` at k8s.
+Applies given `cells.<cell>.<branchName>` at k8s and uses imageTag without namespace applied. 
+
+This is useful to bootstrap latest production released containers within the development `namespace` with development mode applied.
 
 #### `angel k8sd delete :namespace :branchName`
 
@@ -65,3 +75,9 @@ Prints last 10 lines and streams the respective container logs from the cell
 #### `angel k8sd sync :namespace`
 
 Monitors for file changes within the repo's `cells/node_modules` and current working cell directories and uploads any to respective container at k8s.
+
+#### `angel k8sd buildbase :branchName :namespace`
+
+Creates a base container image using `angel buildbase` script from `angelscripts-dockerbuild`.
+
+This is used by `angel k8sd up` as base layer to bootstrap respective cell without installing any of its depdencies.

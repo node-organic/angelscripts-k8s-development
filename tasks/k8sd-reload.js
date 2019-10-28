@@ -1,10 +1,6 @@
 const path = require('path')
 
 module.exports = function (angel) {
-  angel.on('k8sd npm install', function (angel) {
-    angel.do('k8sd exec -- npm install')
-  })
-
   angel.on('k8sd restart', function (angel) {
     const packagejson = require(path.join(process.cwd(), 'package.json'))
     let mainRelativePath = packagejson.main
