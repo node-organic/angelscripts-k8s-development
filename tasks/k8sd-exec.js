@@ -3,10 +3,10 @@ const spawn = require('child_process').spawn
 const getPodsForCell = require('organic-stem-k8s-get-pods')
 
 module.exports = function (angel) {
-  angel.on(/k8sd exec -- (.*)/, function (angel) {
+  angel.on(/^k8sd exec -- (.*)/, function (angel) {
     angel.do(`k8sd exec ${process.env.USER} -- ${angel.cmdData[1]}`)
   })
-  angel.on(/k8sd exec (.*) -- (.*)/, async function (angel) {
+  angel.on(/^k8sd exec (.*) -- (.*)/, async function (angel) {
     let packagejson = require(path.join(process.cwd(), 'package.json'))
     let cellName = packagejson.name
     let namespace = angel.cmdData[1]

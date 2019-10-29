@@ -26,10 +26,10 @@ module.exports = async function (angel) {
   angel.on(/^k8sd up$/, async function (angel) {
     angel.do(`k8sd up ${process.env.USER} development -- echo 'noop'`)
   })
-  angel.on(/k8sd up -- (.*)/, async function (angel) {
+  angel.on(/^k8sd up -- (.*)/, async function (angel) {
     angel.do(`k8sd up ${process.env.USER} development -- ${angel.cmdData[1]}`)
   })
-  angel.on(/k8sd up (.*) (.*) -- (.*)/, async function (angel) {
+  angel.on(/^k8sd up (.*) (.*) -- (.*)/, async function (angel) {
     const namespace = angel.cmdData[1]
     const branchName = angel.cmdData[2]
     const runCMD = angel.cmdData[3]
