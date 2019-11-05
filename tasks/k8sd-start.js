@@ -14,7 +14,7 @@ module.exports = function (angel) {
     const packagejson = require(path.join(process.cwd(), 'package.json'))
     const cellName = packagejson.name
     const cellInfo = await loadCellInfo(cellName)
-    let {yamlContents, imageTag} = await buildContents(namespace, angel.cmdData.branchName, false)
+    let {yamlContents, imageTag} = await buildContents(namespace, angel.cmdData.branchName)
     console.info('using image:', imageTag)
     let child = angel.exec(`kubectl apply --namespace ${namespace} -f -`)
     child.stdin.write(yamlContents)

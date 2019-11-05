@@ -24,7 +24,8 @@ const ensureNamespaceExists = function (namespace) {
 
 module.exports = async function (angel) {
   angel.on(/^k8sd up$/, async function (angel) {
-    angel.do(`k8sd up ${process.env.USER} development -- echo 'noop'`)
+    const packagejson = require(path.join(process.cwd(), 'package.json'))
+    angel.do(`k8sd up ${process.env.USER} development -- node ${packagejson.main}`)
   })
   angel.on(/^k8sd up -- (.*)/, async function (angel) {
     angel.do(`k8sd up ${process.env.USER} development -- ${angel.cmdData[1]}`)
