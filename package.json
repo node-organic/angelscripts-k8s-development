@@ -1,6 +1,6 @@
 {
   "name": "angelscripts-k8s-development",
-  "version": "5.0.2",
+  "version": "5.0.3",
   "scripts": {
     "test": "echo no tests",
     "release-patch": "npm version patch && npm publish",
