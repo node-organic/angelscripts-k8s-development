@@ -27,7 +27,6 @@ Notes:
 ```
 $ cd ./my-stem-skeleton-2-1-based-project
 $ cd ./cells/myCell
-$ angel k8sd buildbase
 $ angel k8sd up -- nodemon index.js
 $ angel k8sd down
 ```
