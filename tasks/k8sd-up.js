@@ -1,7 +1,8 @@
 const findSkeletonRoot = require('organic-stem-skeleton-find-root')
 const getPodsForCell = require('organic-stem-k8s-get-pods')
 const path = require('path')
-const {exec} = require('child_process')
+const { exec } = require('child_process')
+const objToHash = require('object-hash')
 
 const buildContents = require('../lib/build-k8s-config-contents')
 
@@ -20,6 +21,29 @@ const ensureNamespaceExists = function (namespace) {
       resolve()
     })
   })
+}
+
+const getLocalDockerImage = async function (baseImageTag) {
+  return new Promise((resolve, reject) => {
+    exec(`docker image inspect ${baseImageTag}`, function (err, stdout, stderr) {
+      if (err) return resolve(false)
+      resolve(true)
+    })
+  })
+}
+
+const ensureBaseImage = async function (packagejson, angel) {
+  const packagelockjson = require(path.join(process.cwd(), 'package-lock.json'))
+  let baseImageTag = packagejson.name + '-' + objToHash(packagelockjson.dependencies)
+  let baseImageExists = await getLocalDockerImage(baseImageTag)
+  if (!baseImageExists) {
+    console.info('BUILDING BASEIMAGE:')
+    let buildBaseCmd = `npx angel buildbase development ${baseImageTag}`
+    console.log(buildBaseCmd)
+    await angel.exec(buildBaseCmd)
+    console.log(`done, build ${baseImageTag}`)
+  }
+  return baseImageTag
 }
 
 module.exports = async function (angel) {
@@ -41,7 +65,7 @@ module.exports = async function (angel) {
     const cellName = packagejson.name
     const cellInfo = await loadCellInfo(cellName)
 
-    let existingPods = await getPodsForCell({cellName, namespace: namespace})
+    let existingPods = await getPodsForCell({ cellName, namespace: namespace })
     let options = cellInfo.dna['k8sdevelopment'] || {}
     if (!cellInfo.dna.development) throw new Error('development dna needed for cell ' + cellName)
 
@@ -49,11 +73,13 @@ module.exports = async function (angel) {
       console.info('ENSURE NAMESPACE:')
       await ensureNamespaceExists(namespace)
 
-      let {yamlContents, imageTag, registry} = await buildContents(namespace, branchName)
+      let { yamlContents, imageTag, registry } = await buildContents(namespace, branchName)
 
       if (!options.disableBuild) {
+        console.info('ENSURE BASEIMAGE:')
+        let baseImageTag = await ensureBaseImage(packagejson, angel)
         console.info('BUILDING:')
-        let buildCmd = `npx angel build ${imageTag}-base development ${imageTag} -- ${runCMD}`
+        let buildCmd = `npx angel build ${baseImageTag} development ${imageTag} -- ${runCMD}`
         console.log(buildCmd)
         await angel.exec(buildCmd)
         console.log('PUBLISHING:')
@@ -73,7 +99,7 @@ module.exports = async function (angel) {
 
       // wait for deployment to complete
       await (new Promise((resolve, reject) => child.on('exit', resolve)))
-      existingPods = await getPodsForCell({cellName, namespace: namespace, waitPods: true})
+      existingPods = await getPodsForCell({ cellName, namespace: namespace, waitPods: true })
     } else {
       console.info(`FOUND EXISTING PODS in ${namespace}`, existingPods.length)
     }

@@ -18,6 +18,7 @@
     "chokidar": "^3.2.1",
     "json-to-pretty-yaml": "^1.2.2",
     "json2yaml": "^1.1.0",
+    "object-hash": "^2.0.0",
     "organic-dna-cells-info": "^2.0.1",
     "organic-stem-k8s-get-pods": "^2.1.0",
     "organic-stem-skeleton-find-root": "^2.0.0"
