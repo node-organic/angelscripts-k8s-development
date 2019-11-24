@@ -1,4 +1,5 @@
-const buildContents = require('../lib/build-k8s-config-contents')
+const path = require('path')
+const objToHash = require('object-hash')
 
 module.exports = function (angel) {
   angel.on('k8sd buildbase', async function (angel) {
@@ -6,19 +7,12 @@ module.exports = function (angel) {
   })
   angel.on('k8sd buildbase :namespace :branchName', async function (angel) {
     console.info('BUILDING BASEIMAGE:')
-    const namespace = angel.cmdData.namespace
-    const branchName = angel.cmdData.branchName
-    let {imageTag, registry} = await buildContents(namespace, branchName)
-    let buildBaseCmd = `npx angel buildbase development ${imageTag}-base`
+    const packagejson = require(path.join(process.cwd(), 'package.json'))
+    const packagelockjson = require(path.join(process.cwd(), 'package-lock.json'))
+    let baseImageTag = packagejson.name + '-' + objToHash(packagelockjson.dependencies)
+    let buildBaseCmd = `npx angel buildbase development ${baseImageTag}`
     console.log(buildBaseCmd)
     await angel.exec(buildBaseCmd)
-    console.log('PUBLISHING:')
-    let publicCmd = [
-      `docker tag ${imageTag}-base ${registry}/${imageTag}-base`,
-      `docker push ${registry}/${imageTag}-base`
-    ].join(' && ')
-    console.log('running', publicCmd)
-    await angel.exec(publicCmd)
-    console.log(`done, pushed ${registry}/${imageTag}-base`)
+    console.log(`done, build ${baseImageTag}`)
   })
 }
