@@ -9,4 +9,5 @@ module.exports = function (angel) {
   require('./tasks/k8sd-reload')(angel)
   require('./tasks/k8sd-buildbase')(angel)
   require('./tasks/k8sd-start')(angel)
+  require('./tasks/k8sd-reversetunnel')(angel)
 }

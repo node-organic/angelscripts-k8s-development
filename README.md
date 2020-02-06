@@ -80,3 +80,9 @@ Monitors for file changes within the repo's `cells/node_modules` and current wor
 Creates a base container image using `angel buildbase` script from `angelscripts-dockerbuild`.
 
 This is used by `angel k8sd up` as base layer to bootstrap respective cell without installing any of its depdencies.
+
+#### `angel k8sd reversetunnel :namespace -- :runCmd`
+
+Uses current working `cell.dna.development` branch to create a deployment (and optionally service) having `datawire/telepresence-k8s:0.104` image set.
+
+Once the deployment is running establishes reverse tunnel to its pod via `telepresence` (expected to be pre-installed).

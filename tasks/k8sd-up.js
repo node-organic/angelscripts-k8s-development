@@ -5,6 +5,7 @@ const { exec } = require('child_process')
 const objToHash = require('object-hash')
 
 const buildContents = require('../lib/build-k8s-config-contents')
+const childEnd = require('../lib/childend-as-promise')
 
 const ensureNamespaceExists = function (namespace) {
   return new Promise((resolve, reject) => {
@@ -97,8 +98,7 @@ module.exports = async function (angel) {
       child.stdin.write(yamlContents)
       child.stdin.end()
 
-      // wait for deployment to complete
-      await (new Promise((resolve, reject) => child.on('exit', resolve)))
+      await childEnd(child)
       existingPods = await getPodsForCell({ cellName, namespace: namespace, waitPods: true })
     } else {
       console.info(`FOUND EXISTING PODS in ${namespace}`, existingPods.length)
