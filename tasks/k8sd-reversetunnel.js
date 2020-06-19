@@ -28,7 +28,6 @@ module.exports = function (angel) {
     createService.stdin.write(yamlContents)
     createService.stdin.end()
     await childEnd(createService)
-    let existingPods = await getPodsForCell({ cellName, namespace: namespace, waitPods: true })
     console.info('starting telepresence')
     let args = [
       `-m inject-tcp`,
@@ -40,6 +39,10 @@ module.exports = function (angel) {
     }
     args.push(`--run ${cmdToRun}`) // keep always at the end
     let telepresence = angel.exec(`telepresence ${args.join(' ')}`)
+    telepresence.on('exit', function () {
+      console.error('telepresence failed, terminating...')
+      process.exit(1)
+    })
 
     process.on('SIGINT', function () {
       telepresence.kill()
